@@ -24,3 +24,5 @@ Requesting parties retrieve encrypted identity attributes from the user namespac
 ## Standard-compliance
 
 Attribute management and attribute sharing in re:claim is available through the OpenID Connect protocol. This allows current web applications to make use of re:claim with little modification today!
+
+(c) 2018 Fraunhofer AISEC
