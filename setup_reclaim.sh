@@ -7,7 +7,7 @@ if [ ! -f /etc/reclaim/api.reclaim.local.der ]
 then
     echo "Setting up *.reclaim"
 
-    echo "staring gnunet"
+    echo "starting gnunet"
     gnunet-arm -s &> ${HOME}/gnunet.log
     gnunet-identity -C reclaim
     openssl genrsa -des3 -passout pass:xxxx -out server.pass.key 2048
@@ -20,7 +20,7 @@ then
     HEXCERT=`xxd -p /etc/reclaim/ui.reclaim.local.der | tr -d '\n'`
     echo $HEXCERT
     BOXVALUE="6 443 52 3 0 0 $HEXCERT"
-    gnunet-namestore -z reclaim -a -n ui -t A -V "$UI_IP" -e 1d -p
+    gnunet-namestore -z reclaim -a -n ui -t A -V "$WEBSERVER_IP" -e 1d -p
     gnunet-namestore -z reclaim -a -n ui -t LEHO -V "ui.reclaim.local" -e 1d -p
     gnunet-namestore -z reclaim -a -n ui -t BOX -V "$BOXVALUE" -e 1d -p
 
@@ -35,7 +35,7 @@ then
     HEXCERT=`xxd -p /etc/reclaim/api.reclaim.local.der | tr -d '\n'`
     echo $HEXCERT
     BOXVALUE="6 443 52 3 0 0 $HEXCERT"
-    gnunet-namestore -z reclaim -a -n api -t A -V "$UI_IP" -e 1d -p
+    gnunet-namestore -z reclaim -a -n api -t A -V "$WEBSERVER_IP" -e 1d -p
     gnunet-namestore -z reclaim -a -n api -t LEHO -V "api.reclaim.local" -e 1d -p
     gnunet-namestore -z reclaim -a -n api -t BOX -V "$BOXVALUE" -e 1d -p
 
@@ -46,7 +46,7 @@ then
     gnunet-arm -e
 fi
 
-echo "staring gnunet"
+echo "starting gnunet"
 gnunet-arm -s &> ${HOME}/gnunet.log
 
 gnunet-arm -i rest
