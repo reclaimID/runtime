@@ -20,7 +20,7 @@ then
     HEXCERT=`xxd -p /etc/reclaim/ui.reclaim.local.der | tr -d '\n'`
     echo $HEXCERT
     BOXVALUE="6 443 52 3 0 0 $HEXCERT"
-    gnunet-namestore -z reclaim -a -n ui -t A -V "10.0.0.4" -e 1d -p
+    gnunet-namestore -z reclaim -a -n ui -t A -V "$UI_IP" -e 1d -p
     gnunet-namestore -z reclaim -a -n ui -t LEHO -V "ui.reclaim.local" -e 1d -p
     gnunet-namestore -z reclaim -a -n ui -t BOX -V "$BOXVALUE" -e 1d -p
 
@@ -35,7 +35,7 @@ then
     HEXCERT=`xxd -p /etc/reclaim/api.reclaim.local.der | tr -d '\n'`
     echo $HEXCERT
     BOXVALUE="6 443 52 3 0 0 $HEXCERT"
-    gnunet-namestore -z reclaim -a -n api -t A -V "10.0.0.4" -e 1d -p
+    gnunet-namestore -z reclaim -a -n api -t A -V "$UI_IP" -e 1d -p
     gnunet-namestore -z reclaim -a -n api -t LEHO -V "api.reclaim.local" -e 1d -p
     gnunet-namestore -z reclaim -a -n api -t BOX -V "$BOXVALUE" -e 1d -p
 
