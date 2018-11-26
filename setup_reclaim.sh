@@ -68,6 +68,7 @@ fi
 echo "starting gnunet"
 gnunet-arm -s &> ${HOME}/gnunet.log
 
+gnunet-config -s rest -o REST_ALLOW_ORIGIN -V https://ui.reclaim
 gnunet-arm -i rest
 gnunet-arm -i reclaim
 gnunet-arm -i gns-proxy
