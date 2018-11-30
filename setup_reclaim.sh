@@ -7,7 +7,7 @@ if [ ! -f /etc/reclaim/api.reclaim.local.der ]
 then
     echo "Setting up *.reclaim"
 
-    echo "staring gnunet"
+    echo "starting gnunet"
     gnunet-arm -s &> ${HOME}/gnunet.log
     gnunet-identity -C reclaim
     openssl genrsa -des3 -passout pass:xxxx -out server.pass.key 2048
