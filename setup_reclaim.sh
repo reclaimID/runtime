@@ -55,14 +55,14 @@ gnunet-arm -i gns-proxy
 
 gnunet-identity -e reclaim -s gns-proxy
 
+# set custom secrets
+gnunet-config -s reclaim-rest-plugin -o PSW -V $PSW_SECRET
+gnunet-config -s reclaim-rest-plugin -o JWT_SECRET -V $JWT_SECRET
+
 if [ -n "$RECLAIMUI_URL" ]; then
     gnunet-config -s reclaim-rest-plugin -o ADDRESS -V $RECLAIMUI_URL
     gnunet-arm -k rest
     gnunet-arm -i rest
 fi
-
-# set custom secrets
-gnunet-config -s reclaim-rest-plugin -o PSW -V $PSW_SECRET
-gnunet-config -s reclaim-rest-plugin -o JWT_SECRET -V $JWT_SECRET
 
 exec gnunet-arm -m
