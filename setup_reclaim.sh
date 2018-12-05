@@ -81,4 +81,8 @@ if [ -n "$RECLAIMUI_URL" ]; then
     gnunet-arm -i rest
 fi
 
+# set custom secrets
+gnunet-config -s reclaim-rest-plugin -o PSW -V $PSW_SECRET
+gnunet-config -s reclaim-rest-plugin -o JWT_SECRET -V $JWT_SECRET
+
 exec gnunet-arm -m
