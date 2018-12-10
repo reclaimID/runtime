@@ -24,7 +24,6 @@ then
     gnunet-namestore -z reclaim -a -n ui -t LEHO -V "ui.reclaim.local" -e 1d -p
     gnunet-namestore -z reclaim -a -n ui -t BOX -V "$BOXVALUE" -e 1d -p
 
-
     openssl genrsa -des3 -passout pass:xxxx -out server.pass.key 2048
     openssl rsa -passin pass:xxxx -in server.pass.key -out /etc/reclaim/api.reclaim.local.key
     rm server.pass.key
@@ -38,8 +37,6 @@ then
     gnunet-namestore -z reclaim -a -n api -t A -V "$WEBSERVER_IP" -e 1d -p
     gnunet-namestore -z reclaim -a -n api -t LEHO -V "api.reclaim.local" -e 1d -p
     gnunet-namestore -z reclaim -a -n api -t BOX -V "$BOXVALUE" -e 1d -p
-
-    #gnunet-namestore -z reclaim -a -n demo -t PKEY -V "BTWD21BYAGDH47W0WAM1RF8GZR3YEA9WW6C6XJ51YX3BS944Y9DG" -e never -p
 
     openssl genrsa -des3 -passout pass:xxxx -out server.pass.key 2048
     openssl rsa -passin pass:xxxx -in server.pass.key -out /etc/reclaim/demo.reclaim.local.key
