@@ -1,4 +1,6 @@
-# The reclaim runtime
+![re:claim](https://avatars2.githubusercontent.com/u/44837876?s=200&v=4)
+
+# The runtime
 This is the core service of the reclaim identity system.
 
 ## Technology
