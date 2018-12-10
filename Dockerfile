@@ -1,6 +1,6 @@
 FROM reclaimid/runtime:latest
 
-RUN sed -i '/# ADD CUSTOM CONFIGURATION HERE #/ r demo_configuration' setup_reclaim.sh
+RUN sed -i '/# ADD CUSTOM CONFIGURATION HERE #/ r demo_configuration' /opt/setup_reclaim.sh
 
 CMD [ "/opt/setup_reclaim.sh" ]
 
