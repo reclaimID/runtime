@@ -1,8 +1,6 @@
-FROM schanzen/gnunet:experimental
+FROM reclaimid/runtime:latest
 
-EXPOSE 7777
-
-COPY setup_reclaim.sh /opt
+RUN sed -i '/# ADD CUSTOM CONFIGURATION HERE #/ r demo_configuration' setup_reclaim.sh
 
 CMD [ "/opt/setup_reclaim.sh" ]
 
