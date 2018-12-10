@@ -39,7 +39,10 @@ then
     gnunet-namestore -z reclaim -a -n api -t LEHO -V "api.reclaim.local" -e 1d -p
     gnunet-namestore -z reclaim -a -n api -t BOX -V "$BOXVALUE" -e 1d -p
 
-    gnunet-namestore -z reclaim -a -n demo -t PKEY -V "BTWD21BYAGDH47W0WAM1RF8GZR3YEA9WW6C6XJ51YX3BS944Y9DG" -e never -p
+
+    #################################
+    # ADD CUSTOM CONFIGURATION HERE #
+    #################################
 
     gnunet-config -s hostlist -o "SERVERS" -V "http://reclaim-identity.io:8080/hostlist http://v10.gnunet.org/hostlist"
     gnunet-config -w
