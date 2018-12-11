@@ -1,4 +1,4 @@
-FROM registry.gitlab.com/reclaimid/gnunet-docker:latest
+FROM registry.gitlab.com/reclaimid/runtime:latest
 
 RUN sed -i '/# ADD CUSTOM CONFIGURATION HERE #/ r demo_configuration' /opt/setup_reclaim.sh
 
