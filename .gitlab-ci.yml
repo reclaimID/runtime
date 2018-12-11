@@ -1,0 +1,12 @@
+mirror_to_gitlab:
+    before_script:
+        - 'which ssh-agent || ( apt-get update && apt-get install openssh-client -y )'
+        - eval $(ssh-agent -s)
+        - ssh-add <(echo "$ssh_key" | base64 -d)
+        - mkdir -p ~/.ssh
+        - chmod 700 ~/.ssh
+        - echo "$ssh_host_keys" | base64 -d >> ~/.ssh/known_hosts
+    script:
+        - git push git@github.com:reclaimID/runtime.git
+
+
