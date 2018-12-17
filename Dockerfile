@@ -1,4 +1,4 @@
-FROM registry.gitlab.com/reclaimid/gnunet-docker:latest
+FROM registry.gitlab.com/reclaimid/gnunet-docker:experimental
 
 EXPOSE 7777
 
