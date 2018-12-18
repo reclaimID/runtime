@@ -13,7 +13,6 @@ build:
   stage: build
   script:
     - docker pull $CONTAINER_IMAGE:demo || true
-    - docker build --cache-from $CONTAINER_IMAGE:demo --tag $CONTAINER_IMAGE:$CI_COMMIT_SHA --tag $CONTAINER_IMAGE:demo .
-    - docker push $CONTAINER_IMAGE:$CI_COMMIT_SHA
+    - docker build --cache-from $CONTAINER_IMAGE:demo --tag $CONTAINER_IMAGE:demo .
     - docker push $CONTAINER_IMAGE:demo
 
