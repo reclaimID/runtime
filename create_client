@@ -18,6 +18,16 @@ parse_opt() {
                 shift
                 shift
                 ;;
+            --description)
+                CLIENT_DESCRIPTION="$2"
+                shift
+                shift
+                ;;
+            --path)
+                REDIRECT_URI_PATH_EXTENSION="$2"
+                shift
+                shift
+                ;;
             *)
                 echo "Usage: tbd"
                 exit 1
