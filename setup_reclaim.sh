@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # soft fail if dir already exists
 mkdir -p /etc/reclaim
@@ -39,11 +39,32 @@ then
     gnunet-namestore -z reclaim -a -n api -t LEHO -V "api.reclaim.local" -e 1d -p
     gnunet-namestore -z reclaim -a -n api -t BOX -V "$BOXVALUE" -e 1d -p
 
-    #################################
-    # ADD CUSTOM CONFIGURATION HERE #
-    #################################
+    ###################################
+    ## ADD CUSTOM CONFIGURATION HERE ##
+    ###################################
 
+    openssl genrsa -des3 -passout pass:xxxx -out server.pass.key 2048
+    openssl rsa -passin pass:xxxx -in server.pass.key -out /etc/reclaim/demo.reclaim.local.key
+    rm server.pass.key
+    openssl req -new -key /etc/reclaim/demo.reclaim.local.key -out server.csr \
+    -subj "/C=DE/ST=Bavaria/L=Munich/O=Fraunhofer/OU=SAS/CN=demo.reclaim.local"
+    openssl x509 -req -days 3650 -in server.csr -signkey /etc/reclaim/demo.reclaim.local.key -out /etc/reclaim/demo.reclaim.local.crt
+    openssl x509 -in /etc/reclaim/demo.reclaim.local.crt -out /etc/reclaim/demo.reclaim.local.der -outform DER
+    HEXCERT=`xxd -p /etc/reclaim/demo.reclaim.local.der | tr -d '\n'`
+    echo $HEXCERT
+    BOXVALUE="6 443 52 3 0 0 $HEXCERT"
+    gnunet-namestore -z reclaim -a -n demo -t A -V "$WEBSERVER_IP" -e 1d -p
+    gnunet-namestore -z reclaim -a -n demo -t LEHO -V "demo.reclaim.local" -e 1d -p
+    gnunet-namestore -z reclaim -a -n demo -t BOX -V "$BOXVALUE" -e 1d -p
 
+    RP_KEY=$(gnunet-identity -d | grep reclaim | awk '{print $3}')
+    REDIRECT_URI="https://demo.$RP_KEY/login"
+    gnunet-namestore -z reclaim -a -n "+" -t "RECLAIM_OIDC_REDIRECT" -V "$REDIRECT_URI" -e 1d -p
+    gnunet-namestore -z reclaim -a -n "+" -t "RECLAIM_OIDC_CLIENT" -V "re:claim Demo Website" -e 1d -p
+
+    ###################################
+    ###################################
+    ###################################
 
     gnunet-config -s hostlist -o "SERVERS" -V "http://reclaim-identity.io:8080/hostlist http://v10.gnunet.org/hostlist"
     gnunet-config -w
