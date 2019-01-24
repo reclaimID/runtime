@@ -34,8 +34,19 @@ parse_opt "$@"
 
 SITE_NAME=$(echo "$CLIENT_URI" | cut -d '.' -f 1)
 CLIENT_IDENTITY=$(echo "$CLIENT_URI" | cut -d '.' -f 2)
+RP_KEY=$(gnunet-identity -d | grep reclaim | awk '{print $3}')
+REDIRECT_URI="https://$SITE_NAME.$RP_KEY$REDIRECT_URI_PATH_EXTENSION"
 
-# TODO: remove-client functionality here
+gnunet-namestore -z "$CLIENT_IDENTITY" -d -n "$SITE_NAME" -t A
+gnunet-namestore -z "$CLIENT_IDENTITY" -d -n "$SITE_NAME" -t LEHO
+gnunet-namestore -z "$CLIENT_IDENTITY" -d -n "$SITE_NAME" -t BOX
+
+gnunet-namestore -z "$CLIENT_IDENTITY" -d -n "+" -t "RECLAIM_OIDC_REDIRECT"
+gnunet-namestore -z "$CLIENT_IDENTITY" -d -n "+" -t "RECLAIM_OIDC_CLIENT"
+
+rm /etc/reclaim/"$CLIENT_URI".local.*
+
+echo "client deleted."
 
 exit 0
 
