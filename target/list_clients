@@ -1,0 +1,28 @@
+#!/bin/sh
+
+i=$(cat /etc/reclaim/clients.csv | wc -l)
+
+echo "OpenID Connect"
+echo -e "==============\n"
+
+echo "Endpoints:"
+echo "https://api.reclaim/oidc/authorize"
+echo "https://api.reclaim/oidc/token"
+echo -e "https://api.reclaim/oidc/userinfo\n"
+
+echo -e "JWT tokens are signed (HS512) using the secret: $(gnunet-config -s reclaim-rest-plugin -o JWT_SECRET)\n"
+
+echo -e "Registered Clients:\n"
+
+for k in `seq 1 $i`
+do
+    line=$(cat /etc/reclaim/clients.csv | sed -n ''$i'p')
+    echo "----"
+    echo "Client ID: $(echo $line | cut -d ',' -f1)"
+    echo "Secret: $(gnunet-config -s reclaim-rest-plugin -o PSW)"
+    echo "Grant Type: authorization_code"
+    echo "Redirect URI: $(echo $line | cut -d ',' -f2)"
+done
+
+exit 0
+

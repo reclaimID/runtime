@@ -1,0 +1,42 @@
+#!/bin/bash
+
+CLIENT_URI=""
+CLIENT_URI_SET=0
+
+parse_opt() {
+    while [[ $# -gt 0 ]]
+    do
+        key="$1"
+        case $key in
+            --uri)
+                CLIENT_URI="$2"
+                CLIENT_URI_SET=1
+                shift
+                shift
+                ;;
+            *)
+                echo "Usage: tbd"
+                exit 1
+                shift
+                ;;
+        esac
+    done
+
+    if [ 0 = $CLIENT_URI_SET ]
+    then
+        echo "uri not set."
+        exit 1
+    fi
+
+}
+
+parse_opt "$@"
+
+SITE_NAME=$(echo "$CLIENT_URI" | cut -d '.' -f 1)
+CLIENT_IDENTITY=$(echo "$CLIENT_URI" | cut -d '.' -f 2)
+
+# TODO: remove-client functionality here
+
+exit 0
+
+

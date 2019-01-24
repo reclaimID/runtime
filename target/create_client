@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 CLIENT_URI=""
 CLIENT_URI_SET=0
@@ -45,9 +45,6 @@ parse_opt() {
     SITE_NAME=$(echo "$CLIENT_URI" | cut -d '.' -f 1)
     CLIENT_IDENTITY=$(echo "$CLIENT_URI" | cut -d '.' -f 2)
 
-    echo "registering client uri: $CLIENT_URI"
-    echo "site name: $SITE_NAME"
-    echo "client id: $CLIENT_IDENTITY"
     # TODO: do sanitization on URI
 
 }
@@ -78,6 +75,8 @@ register_client() {
     gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "+" -t "RECLAIM_OIDC_REDIRECT" -V "$REDIRECT_URI" -e 1d -p
     gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "+" -t "RECLAIM_OIDC_CLIENT" -V "$CLIENT_DESCRIPTION" -e 1d -p
 
+    echo "$CLIENT_URI,$REDIRECT_URI" >> /etc/reclaim/clients.csv
+
     # restart services
     gnunet-arm -k rest
     gnunet-arm -i rest
@@ -85,6 +84,20 @@ register_client() {
     gnunet-arm -i reclaim
     gnunet-arm -k gns-proxy
     gnunet-arm -i gns-proxy
+
+    echo "registering client uri: $CLIENT_URI"
+    echo "site name: $SITE_NAME"
+    echo "client id: $CLIENT_IDENTITY"
+    echo "secret: $(gnunet-config -s reclaim-rest-plugin -o PSW)"
+    echo "grant_type: authorization_code"
+    echo "redirect_uri $REDIRECT_URI"
+
+    echo -e "\nEndpoints:"
+    echo "https://api.reclaim/oidc/authorize"
+    echo "https://api.reclaim/oidc/token"
+    echo -e "https://api.reclaim/oidc/userinfo\n"
+
+    echo "JWT tokens are signed (HS512) using the secret: $(gnunet-config -s reclaim-rest-plugin -o JWT_SECRET)"
 }
 
 parse_opt "$@"
