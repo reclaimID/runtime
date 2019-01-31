@@ -72,8 +72,8 @@ register_client() {
 
     RP_KEY=$(gnunet-identity -d | grep reclaim | awk '{print $3}')
     REDIRECT_URI="https://$SITE_NAME.$RP_KEY$REDIRECT_URI_PATH_EXTENSION"
-    gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "+" -t "RECLAIM_OIDC_REDIRECT" -V "$REDIRECT_URI" -e 1d -p
-    gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "+" -t "RECLAIM_OIDC_CLIENT" -V "$CLIENT_DESCRIPTION" -e 1d -p
+    gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "@" -t "RECLAIM_OIDC_REDIRECT" -V "$REDIRECT_URI" -e 1d -p
+    gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "@" -t "RECLAIM_OIDC_CLIENT" -V "$CLIENT_DESCRIPTION" -e 1d -p
 
     echo "$CLIENT_URI,$REDIRECT_URI" >> /etc/reclaim/clients.csv
 

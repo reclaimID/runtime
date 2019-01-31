@@ -41,8 +41,8 @@ gnunet-namestore -z "$CLIENT_IDENTITY" -d -n "$SITE_NAME" -t A
 gnunet-namestore -z "$CLIENT_IDENTITY" -d -n "$SITE_NAME" -t LEHO
 gnunet-namestore -z "$CLIENT_IDENTITY" -d -n "$SITE_NAME" -t BOX
 
-gnunet-namestore -z "$CLIENT_IDENTITY" -d -n "+" -t "RECLAIM_OIDC_REDIRECT"
-gnunet-namestore -z "$CLIENT_IDENTITY" -d -n "+" -t "RECLAIM_OIDC_CLIENT"
+gnunet-namestore -z "$CLIENT_IDENTITY" -d -n "@" -t "RECLAIM_OIDC_REDIRECT"
+gnunet-namestore -z "$CLIENT_IDENTITY" -d -n "@" -t "RECLAIM_OIDC_CLIENT"
 
 rm /etc/reclaim/"$CLIENT_URI".local.*
 
