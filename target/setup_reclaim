@@ -48,7 +48,7 @@ then
     ###################################
     ###################################
 
-    gnunet-config -s hostlist -o "SERVERS" -V "http://reclaim-identity.io:8080/hostlist http://v10.gnunet.org/hostlist"
+    gnunet-config -s hostlist -o "SERVERS" -V "http://v10.gnunet.org/hostlist"
     gnunet-config -w
     gnunet-arm -e
 fi
