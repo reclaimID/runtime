@@ -84,6 +84,7 @@ register_client() {
     else
         echo "ego $CLIENT_IDENTITY was already created or an error occurred"
     fi
+    RP_KEY=$(gnunet-identity -d | grep $CLIENT_IDENTITY | awk '{print $3}')
     if [ 1 = $GNS_URI_SET ]
     then
         openssl genrsa -des3 -passout pass:xxxx -out server.pass.key 2048
@@ -101,7 +102,6 @@ register_client() {
         gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "$SITE_NAME" -t BOX -V "$BOXVALUE" -e 1d -p
 
 
-        RP_KEY=$(gnunet-identity -d | grep $CLIENT_IDENTITY | awk '{print $3}')
         REDIRECT_URI="https://$SITE_NAME.$RP_KEY$REDIRECT_URI_PATH_EXTENSION"
     else
         REDIRECT_URI="https://$DNS_URI$REDIRECT_URI_PATH_EXTENSION"
@@ -109,7 +109,7 @@ register_client() {
     gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "+" -t "RECLAIM_OIDC_REDIRECT" -V "$REDIRECT_URI" -e 1d -p
     gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "+" -t "RECLAIM_OIDC_CLIENT" -V "$CLIENT_DESCRIPTION" -e 1d -p
 
-    echo "$GNS_URI,$REDIRECT_URI" >> /etc/reclaim/clients.csv
+    echo "$CLIENT_IDENTITY,$REDIRECT_URI" >> /etc/reclaim/clients.csv
 
     # restart services
     gnunet-arm -k rest
@@ -119,7 +119,7 @@ register_client() {
     gnunet-arm -k gns-proxy
     gnunet-arm -i gns-proxy
 
-    echo "registering client uri: $GNS_URI"
+    echo "Client : $CLIENT_IDENTITY"
     echo "secret: $(gnunet-config -s reclaim-rest-plugin -o PSW)"
     echo "grant_type: authorization_code"
     echo "redirect_uri $REDIRECT_URI"
