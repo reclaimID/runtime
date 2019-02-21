@@ -12,9 +12,25 @@ parse_opt() {
     do
         key="$1"
         case $key in
-            --uri)
-                CLIENT_URI="$2"
-                CLIENT_URI_SET=1
+            --gns)
+                GNS_URI="$2"
+                GNS_URI_SET=1
+                shift
+                shift
+                ;;
+            --dns)
+                DNS_URI="$2"
+                DNS_URI_SET=1
+                shift
+                shift
+                ;;
+            --ego)
+                EGO="$2"
+                shift
+                shift
+                ;;
+            --ip4)
+                IPV4="$2"
                 shift
                 shift
                 ;;
@@ -36,14 +52,20 @@ parse_opt() {
         esac
     done
 
-    if [ 0 = $CLIENT_URI_SET ]
+    if [ 1 = $DNS_URI_SET ]
     then
-        echo "uri not set."
+        if [ 0 = $EGO_SET ]
+            echo "ego not set."
+            exit 1
+        fi
+        CLIENT_IDENTITY=$EGO
+    elif [ 1 = $GNS_URI_SET ]
+        SITE_NAME=$(echo "$GNS_URI" | cut -d '.' -f 1)
+        CLIENT_IDENTITY=$(echo "$GNS_URI" | cut -d '.' -f 2)
+    else
+        echo "No URIs given"
         exit 1
     fi
-
-    SITE_NAME=$(echo "$CLIENT_URI" | cut -d '.' -f 1)
-    CLIENT_IDENTITY=$(echo "$CLIENT_URI" | cut -d '.' -f 2)
 
     # TODO: do sanitization on URI
 
@@ -56,22 +78,28 @@ register_client() {
     else
         echo "ego $CLIENT_IDENTITY was already created or an error occurred"
     fi
-    openssl genrsa -des3 -passout pass:xxxx -out server.pass.key 2048
-    openssl rsa -passin pass:xxxx -in server.pass.key -out /etc/reclaim/"$CLIENT_URI".local.key
-    rm server.pass.key
-    openssl req -new -key /etc/reclaim/"$CLIENT_URI".local.key -out server.csr \
-        -subj "/C=DE/ST=Bavaria/L=Munich/O=Fraunhofer/OU=SAS/CN=$CLIENT_URI.local"
-    openssl x509 -req -days 3650 -in server.csr -signkey /etc/reclaim/"$CLIENT_URI".local.key -out /etc/reclaim/"$CLIENT_URI".local.crt
-    openssl x509 -in /etc/reclaim/"$CLIENT_URI".local.crt -out /etc/reclaim/"$CLIENT_URI".local.der -outform DER
-    HEXCERT=`xxd -p /etc/reclaim/"$CLIENT_URI".local.der | tr -d '\n'`
-    echo $HEXCERT
-    BOXVALUE="6 443 52 3 0 0 $HEXCERT"
-    gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "$SITE_NAME" -t A -V "$WEBSERVER_IP" -e 1d -p
-    gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "$SITE_NAME" -t LEHO -V "$CLIENT_URI.local" -e 1d -p
-    gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "$SITE_NAME" -t BOX -V "$BOXVALUE" -e 1d -p
+    if [ 1 = $GNS_URI_SET ]
+    then
+        openssl genrsa -des3 -passout pass:xxxx -out server.pass.key 2048
+        openssl rsa -passin pass:xxxx -in server.pass.key -out /etc/reclaim/"$CLIENT_URI".local.key
+        rm server.pass.key
+        openssl req -new -key /etc/reclaim/"$CLIENT_URI".local.key -out server.csr \
+            -subj "/C=DE/ST=Bavaria/L=Munich/O=Fraunhofer/OU=SAS/CN=$CLIENT_URI.local"
+        openssl x509 -req -days 3650 -in server.csr -signkey /etc/reclaim/"$CLIENT_URI".local.key -out /etc/reclaim/"$CLIENT_URI".local.crt
+        openssl x509 -in /etc/reclaim/"$CLIENT_URI".local.crt -out /etc/reclaim/"$CLIENT_URI".local.der -outform DER
+        HEXCERT=`xxd -p /etc/reclaim/"$CLIENT_URI".local.der | tr -d '\n'`
+        echo $HEXCERT
+        BOXVALUE="6 443 52 3 0 0 $HEXCERT"
+        gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "$SITE_NAME" -t A -V "$IPV4" -e 1d -p
+        gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "$SITE_NAME" -t LEHO -V "$CLIENT_URI.local" -e 1d -p
+        gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "$SITE_NAME" -t BOX -V "$BOXVALUE" -e 1d -p
 
-    RP_KEY=$(gnunet-identity -d | grep reclaim | awk '{print $3}')
-    REDIRECT_URI="https://$SITE_NAME.$RP_KEY$REDIRECT_URI_PATH_EXTENSION"
+
+        RP_KEY=$(gnunet-identity -d | grep $CLIENT_IDENTITY | awk '{print $3}')
+        REDIRECT_URI="https://$SITE_NAME.$RP_KEY$REDIRECT_URI_PATH_EXTENSION"
+    else
+        REDIRECT_URI="https://$DNS_URI$REDIRECT_URI_PATH_EXTENSION"
+    fi
     gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "+" -t "RECLAIM_OIDC_REDIRECT" -V "$REDIRECT_URI" -e 1d -p
     gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "+" -t "RECLAIM_OIDC_CLIENT" -V "$CLIENT_DESCRIPTION" -e 1d -p
 
@@ -86,8 +114,6 @@ register_client() {
     gnunet-arm -i gns-proxy
 
     echo "registering client uri: $CLIENT_URI"
-    echo "site name: $SITE_NAME"
-    echo "client id: $CLIENT_IDENTITY"
     echo "secret: $(gnunet-config -s reclaim-rest-plugin -o PSW)"
     echo "grant_type: authorization_code"
     echo "redirect_uri $REDIRECT_URI"

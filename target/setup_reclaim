@@ -43,6 +43,8 @@ then
     ## ADD CUSTOM CONFIGURATION HERE ##
     ###################################
 
+    create_client --gns demo.reclaim --ip4 $WEBSERVER_IP
+    #create_client --dns demo.reclaim-identity.io --ego reclaim
 
     ###################################
     ###################################
@@ -73,7 +75,5 @@ if [ -n "$RECLAIMUI_URL" ]; then
     gnunet-arm -k rest
     gnunet-arm -i rest
 fi
-
-create_client --uri demo.reclaim
 
 exec gnunet-arm -m
