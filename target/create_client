@@ -65,6 +65,7 @@ parse_opt() {
         fi
         CLIENT_IDENTITY=$EGO
     elif [ 1 = $GNS_URI_SET ]
+    then
         SITE_NAME=$(echo "$GNS_URI" | cut -d '.' -f 1)
         CLIENT_IDENTITY=$(echo "$GNS_URI" | cut -d '.' -f 2)
     else
