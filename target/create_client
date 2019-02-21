@@ -78,6 +78,7 @@ register_client() {
     else
         echo "ego $CLIENT_IDENTITY was already created or an error occurred"
     fi
+<<<<<<< HEAD
     if [ 1 = $GNS_URI_SET ]
     then
         openssl genrsa -des3 -passout pass:xxxx -out server.pass.key 2048
@@ -102,6 +103,26 @@ register_client() {
     fi
     gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "+" -t "RECLAIM_OIDC_REDIRECT" -V "$REDIRECT_URI" -e 1d -p
     gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "+" -t "RECLAIM_OIDC_CLIENT" -V "$CLIENT_DESCRIPTION" -e 1d -p
+=======
+    openssl genrsa -des3 -passout pass:xxxx -out server.pass.key 2048
+    openssl rsa -passin pass:xxxx -in server.pass.key -out /etc/reclaim/"$CLIENT_URI".local.key
+    rm server.pass.key
+    openssl req -new -key /etc/reclaim/"$CLIENT_URI".local.key -out server.csr \
+        -subj "/C=DE/ST=Bavaria/L=Munich/O=Fraunhofer/OU=SAS/CN=$CLIENT_URI.local"
+    openssl x509 -req -days 3650 -in server.csr -signkey /etc/reclaim/"$CLIENT_URI".local.key -out /etc/reclaim/"$CLIENT_URI".local.crt
+    openssl x509 -in /etc/reclaim/"$CLIENT_URI".local.crt -out /etc/reclaim/"$CLIENT_URI".local.der -outform DER
+    HEXCERT=`xxd -p /etc/reclaim/"$CLIENT_URI".local.der | tr -d '\n'`
+    echo $HEXCERT
+    BOXVALUE="6 443 52 3 0 0 $HEXCERT"
+    gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "$SITE_NAME" -t A -V "$WEBSERVER_IP" -e 1d -p
+    gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "$SITE_NAME" -t LEHO -V "$CLIENT_URI.local" -e 1d -p
+    gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "$SITE_NAME" -t BOX -V "$BOXVALUE" -e 1d -p
+
+    RP_KEY=$(gnunet-identity -d | grep reclaim | awk '{print $3}')
+    REDIRECT_URI="https://$SITE_NAME.$RP_KEY$REDIRECT_URI_PATH_EXTENSION"
+    gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "@" -t "RECLAIM_OIDC_REDIRECT" -V "$REDIRECT_URI" -e 1d -p
+    gnunet-namestore -z "$CLIENT_IDENTITY" -a -n "@" -t "RECLAIM_OIDC_CLIENT" -V "$CLIENT_DESCRIPTION" -e 1d -p
+>>>>>>> bd9d2c140d2381a4b4503a0af687025a4fa25e09
 
     echo "$CLIENT_URI,$REDIRECT_URI" >> /etc/reclaim/clients.csv
 
