@@ -59,6 +59,7 @@ parse_opt() {
     if [ 1 = $DNS_URI_SET ]
     then
         if [ 0 = $EGO_SET ]
+        then
             echo "ego not set."
             exit 1
         fi
